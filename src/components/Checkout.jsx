@@ -259,7 +259,7 @@ export default function Checkout({ cart, onSuccess }) {
                     <div className="text-center mb-6">
                         <h3 className="font-semibold text-base mb-3">💳 Scan to Pay</h3>
                         <img
-                            src="https://drive.google.com/drive/folders/1niqotO3FJwyX9tRURM9-vUM-Cx--NDBT"
+                            src="https://media.discordapp.net/attachments/1139097979110830092/1440519147208577195/duitnow-izzati.jpg?ex=691e7380&is=691d2200&hm=344efdcdb942a241c278a84c5a26e698bd0fd46809af8b83d59abaf76d612f86&=&format=webp&width=539&height=790"
                             alt="DuitNow QR"
                             className="w-40 sm:w-48 mx-auto rounded-lg shadow-md border-2 border-gray-200"
                         />
