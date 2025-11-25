@@ -196,7 +196,7 @@ export default function Checkout({ cart, onSuccess }) {
 
     // Shipping region fee logic
     const PENINSULAR_STATES = [
-         "PAHANG","PERAK","PERLIS","PUTRAJAYA","TERENGGANU","SELANGOR","NEGERI SEMBILAN","JOHOR","KELANTAN","KEDAH","KUALA LUMPUR","PULAU PINANG","MELAKA"
+        "PAHANG","PERAK","PERLIS","TERENGGANU","SELANGOR","NEGERI SEMBILAN","JOHOR","KELANTAN","KEDAH","PULAU PINANG","MELAKA","PUTRAJAYA","KUALA LUMPUR"
     ];
     const EAST_STATES = ["SABAH","SARAWAK"];
 
@@ -332,6 +332,8 @@ export default function Checkout({ cart, onSuccess }) {
                                 <option value="KEDAH">KEDAH</option>
                                 <option value="PULAU PINANG">PULAU PINANG</option>
                                 <option value="MELAKA">MELAKA</option>
+                                <option value="PUTRAJAYA">PUTRAJAYA</option>
+                                <option value="KUALA LUMPUR">KUALA LUMPUR</option>
                                 <option value="SABAH">SABAH</option>
                                 <option value="SARAWAK">SARAWAK</option>
                             </select>
