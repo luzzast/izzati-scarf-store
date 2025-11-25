@@ -11,6 +11,8 @@ export default function Checkout({ cart, onSuccess }) {
         email: "",
         note: "",
     });
+    const [shippingState, setShippingState] = useState("");
+    const [shippingFee, setShippingFee] = useState(0);
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -78,6 +80,10 @@ export default function Checkout({ cart, onSuccess }) {
             newErrors.email = "Please enter a valid email address (e.g., example@gmail.com)";
         }
 
+        if (!shippingState.trim()) {
+            newErrors.shippingState = "Please select your delivery state";
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -133,6 +139,23 @@ export default function Checkout({ cart, onSuccess }) {
             form.action = scriptURL;
             form.target = 'hidden-form-iframe';
 
+            // Prepare cart with postage line item (selector not submitted)
+            const cartWithShipping = shippingFee > 0
+                ? [
+                    ...cart,
+                    {
+                        cartId: Date.now() + 1,
+                        id: "POSTAGE",
+                        productName: "Postage",
+                        price: Number(shippingFee),
+                        image: "",
+                        color: "-",
+                        size: "-",
+                        quantity: 1,
+                    },
+                  ]
+                : cart;
+
             // Add all fields as hidden inputs
             const fields = {
                 name: formData.name,
@@ -140,7 +163,7 @@ export default function Checkout({ cart, onSuccess }) {
                 phone: formData.phone,
                 email: formData.email,
                 note: formData.note,
-                cart: JSON.stringify(cart),
+                cart: JSON.stringify(cartWithShipping),
                 receipt: base64Image
             };
 
@@ -171,8 +194,26 @@ export default function Checkout({ cart, onSuccess }) {
         }
     };
 
-    // Calculate cart total
+    // Shipping region fee logic
+    const PENINSULAR_STATES = [
+        "PAHANG","PERAK","PERLIS","TERENGGANU","SELANGOR","NEGERI SEMBILAN","JOHOR","KELANTAN","KEDAH","PULAU PINANG","MELAKA"
+    ];
+    const EAST_STATES = ["SABAH","SARAWAK"];
+
+    const handleShippingChange = (state) => {
+        setShippingState(state);
+        if (EAST_STATES.includes(state)) {
+            setShippingFee(9.90);
+        } else if (PENINSULAR_STATES.includes(state)) {
+            setShippingFee(5.90);
+        } else {
+            setShippingFee(0);
+        }
+    };
+
+    // Calculate totals
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const grandTotal = cartTotal + (Number(shippingFee) || 0);
 
     return (
         <div className="w-full bg-white rounded-xl shadow-lg">
@@ -233,11 +274,11 @@ export default function Checkout({ cart, onSuccess }) {
                         </div>
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Shipping Fee</span>
-                            <span className="font-medium text-green-600">FREE</span>
+                            <span className="font-medium">{shippingFee > 0 ? `RM ${shippingFee.toFixed(2)}` : 'RM 0.00'}</span>
                         </div>
                         <div className="border-t pt-2 mt-2 flex justify-between">
                             <span className="font-bold text-base">Total Amount</span>
-                            <span className="font-bold text-lg text-pink-600">RM {cartTotal.toFixed(2)}</span>
+                            <span className="font-bold text-lg text-pink-600">RM {grandTotal.toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -269,6 +310,36 @@ export default function Checkout({ cart, onSuccess }) {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">
+                                Delivery State (for postage)
+                                <span className="text-red-500"> *</span>
+                            </label>
+                            <select
+                                value={shippingState}
+                                onChange={(e) => handleShippingChange(e.target.value)}
+                                className={`w-full border p-2 sm:p-3 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent text-sm ${errors.shippingState ? 'border-red-500' : 'border-gray-300'}`}
+                            >
+                                <option value="">Select your state</option>
+                                <option value="PAHANG">PAHANG</option>
+                                <option value="PERAK">PERAK</option>
+                                <option value="PERLIS">PERLIS</option>
+                                <option value="TERENGGANU">TERENGGANU</option>
+                                <option value="SELANGOR">SELANGOR</option>
+                                <option value="NEGERI SEMBILAN">NEGERI SEMBILAN</option>
+                                <option value="JOHOR">JOHOR</option>
+                                <option value="KELANTAN">KELANTAN</option>
+                                <option value="KEDAH">KEDAH</option>
+                                <option value="PULAU PINANG">PULAU PINANG</option>
+                                <option value="MELAKA">MELAKA</option>
+                                <option value="SABAH">SABAH</option>
+                                <option value="SARAWAK">SARAWAK</option>
+                            </select>
+                            {errors.shippingState && <p className="text-red-500 text-xs mt-1">{errors.shippingState}</p>}
+                            <p className="text-xs text-gray-600 mt-1">
+                                Postage fee: Peninsular RM 5.90, East Malaysia RM 9.90. This will be included as a postage line in your order.
+                            </p>
+                        </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">
                                 Full Name <span className="text-red-500">*</span>
