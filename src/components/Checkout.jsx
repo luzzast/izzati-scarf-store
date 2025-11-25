@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function Checkout({ cart, onSuccess }) {
     const navigate = useNavigate(); // ← ADD THIS LINE HERE
@@ -51,7 +50,7 @@ export default function Checkout({ cart, onSuccess }) {
 
     const validatePhone = (phone) => {
         // Remove spaces, dashes, and plus signs
-        const cleanPhone = phone.replace(/[\s\-\+]/g, '');
+        const cleanPhone = phone.replace(/[\s-+]/g, '');
         // Check if it's 10-11 digits and starts with 0 or 60
         return /^(0\d{9,10}|60\d{9,10})$/.test(cleanPhone);
     };
@@ -259,7 +258,7 @@ export default function Checkout({ cart, onSuccess }) {
                     <div className="text-center mb-6">
                         <h3 className="font-semibold text-base mb-3">💳 Scan to Pay</h3>
                         <img
-                            src="duitnow-izzati.jpg"
+                            src="/duitnow-izzati.jpg"
                             alt="DuitNow QR"
                             className="w-40 sm:w-48 mx-auto rounded-lg shadow-md border-2 border-gray-200"
                         />
