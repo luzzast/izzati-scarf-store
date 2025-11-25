@@ -1,4 +1,4 @@
-// src/pages/LandingPage.jsx
+// src/pages/LandingPage.jsx - UPDATED
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Star, Truck, Shield, Heart, PhoneCall, ArrowRight } from 'lucide-react';
@@ -12,6 +12,11 @@ export default function LandingPage() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // CHANGED: Now routes to /view-selector instead of /shop
+    const goToShop = () => {
+        navigate('/view-selector');
+    };
 
     // Sample product images - REPLACE with your actual Google Sheet images
     const featuredProducts = [
@@ -132,7 +137,7 @@ export default function LandingPage() {
 
                     <div className="text-center mt-12">
                         <button
-                            onClick={() => navigate('/shop')}
+                            onClick={goToShop}
                             className="group bg-gray-800 text-white font-bold px-8 py-4 rounded-full hover:bg-gray-700 transition-all duration-300 shadow-lg inline-flex items-center gap-2"
                         >
                             View All Products
@@ -214,7 +219,7 @@ export default function LandingPage() {
                                 comfort or special occasion elegance, we have the perfect scarf waiting for you.
                             </p>
                             <button
-                                onClick={() => navigate('/shop')}
+                                onClick={goToShop}
                                 className="bg-pink-600 text-white font-bold px-8 py-4 rounded-full hover:bg-pink-700 transition-all duration-300 shadow-lg inline-flex items-center gap-2"
                             >
                                 Explore Collection
@@ -252,7 +257,7 @@ export default function LandingPage() {
                     </p>
 
                     <button
-                        onClick={() => navigate('/shop')}
+                        onClick={goToShop}
                         className="group bg-white text-pink-600 font-bold text-lg px-10 py-5 rounded-full shadow-2xl hover:shadow-white/30 transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-3"
                     >
                         <ShoppingBag className="w-6 h-6 group-hover:rotate-12 transition-transform" />
