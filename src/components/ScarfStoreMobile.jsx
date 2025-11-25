@@ -201,7 +201,7 @@ export default function ScarfStoreMobile() {
 
       <motion.button
         onClick={() => setShowCartDrawer(true)}
-        className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-pink-500 to-pink-600 text-white p-4 rounded-full shadow-2xl hover:shadow-pink-500/50 hover:scale-110 transition-all duration-300"
+        className="fixed bottom-6 right-6 z-40 bg-gradient-to-r from-pink-500 to-pink-600 text-white p-5 rounded-full shadow-2xl hover:shadow-pink-500/50 hover:scale-110 transition-all duration-300"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         animate={{
@@ -215,12 +215,12 @@ export default function ScarfStoreMobile() {
           boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
         }}
       >
-        <ShoppingCart size={24} strokeWidth={2.5} />
+        <ShoppingCart size={30} strokeWidth={2.5} />
         {cart.length > 0 && (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold border-2 border-white"
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold border-2 border-white"
           >
             {cart.length}
           </motion.span>
@@ -233,83 +233,103 @@ export default function ScarfStoreMobile() {
             <p className="text-lg text-gray-600">No products found</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {filtered.map((p) => {
-              const imgs = productImages(p);
-              const idx = imageIndex[p.id] || 0;
-              const hasMultipleImages = imgs.length > 1;
-
-              return (
-                <motion.div
-                  key={p.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.25 }}
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
-                >
-                  <div className="relative">
-                    <img src={imgs[idx] || p.image1 || "/logo.png"} alt={p.productName} className="w-full h-56 object-cover" />
-
-                    {hasMultipleImages && (
-                      <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-2 pointer-events-none">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); prevImage(p.id); }}
-                          className="pointer-events-auto bg-black/50 hover:bg-black/70 text-white rounded-full p-2 shadow-lg border border-white/30 backdrop-blur-sm active:scale-95 transition-all duration-200"
-                          aria-label="Previous image"
-                        >
-                          <ChevronLeft size={20} className="stroke-[2.5]" />
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); nextImage(p.id); }}
-                          className="pointer-events-auto bg-black/50 hover:bg-black/70 text-white rounded-full p-2 shadow-lg border border-white/30 backdrop-blur-sm active:scale-95 transition-all duration-200"
-                          aria-label="Next image"
-                        >
-                          <ChevronRight size={20} className="stroke-[2.5]" />
-                        </button>
+          <>
+            {(() => {
+              const groupedProducts = filtered.reduce((groups, product) => {
+                const cat = product.category || "Uncategorized";
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(product);
+                return groups;
+              }, {});
+              const categoryNames = Object.keys(groupedProducts).sort();
+              const categoryEmojis = {
+                "Premium Silk": "🧵",
+                "Cotton Hijab": "🎀",
+                "Evening Scarf": "✨",
+                "Daily Comfort": "🌸",
+                "Luxury": "👑",
+                "Uncategorized": "🧣",
+              };
+              return categoryNames.map((categoryName) => {
+                const categoryProducts = groupedProducts[categoryName];
+                const emoji = categoryEmojis[categoryName] || "🧣";
+                return (
+                  <div key={categoryName} className="mb-10">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+                      <div className="text-center">
+                        <h2 className="text-xl font-bold text-gray-800">{emoji} {categoryName}</h2>
+                        <p className="text-xs text-gray-600">{categoryProducts.length} {categoryProducts.length === 1 ? 'product' : 'products'}</p>
                       </div>
-                    )}
-
-                    {hasMultipleImages && (
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-                        {imgs.map((_, i) => (
-                          <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === idx ? 'bg-white w-4' : 'bg-white/50'}`} />
-                        ))}
-                      </div>
-                    )}
-
-                    {hasMultipleImages && (
-                      <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded text-xs font-medium backdrop-blur-sm">
-                        {idx + 1}/{imgs.length}
-                      </div>
-                    )}
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-pink-300 to-transparent"></div>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      {categoryProducts.map((p) => {
+                        const imgs = productImages(p);
+                        const idx = imageIndex[p.id] || 0;
+                        const hasMultipleImages = imgs.length > 1;
+                        return (
+                          <motion.div
+                            key={p.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.25 }}
+                            className="bg-white rounded-lg shadow-md overflow-hidden"
+                          >
+                            <div className="relative">
+                              <img src={imgs[idx] || p.image1 || "/logo.png"} alt={p.productName} className="w-full h-80 object-contain bg-white" />
+                              {hasMultipleImages && (
+                                <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-2 pointer-events-none">
+                                  <button onClick={(e) => { e.stopPropagation(); prevImage(p.id); }} className="pointer-events-auto bg-black/50 hover:bg-black/70 text-white rounded-full p-2 shadow-lg border border-white/30 backdrop-blur-sm active:scale-95 transition-all duration-200" aria-label="Previous image">
+                                    <ChevronLeft size={20} className="stroke-[2.5]" />
+                                  </button>
+                                  <button onClick={(e) => { e.stopPropagation(); nextImage(p.id); }} className="pointer-events-auto bg-black/50 hover:bg-black/70 text-white rounded-full p-2 shadow-lg border border-white/30 backdrop-blur-sm active:scale-95 transition-all duration-200" aria-label="Next image">
+                                    <ChevronRight size={20} className="stroke-[2.5]" />
+                                  </button>
+                                </div>
+                              )}
+                              {hasMultipleImages && (
+                                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                                  {imgs.map((_, i) => (
+                                    <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === idx ? 'bg-white w-4' : 'bg-white/50'}`} />
+                                  ))}
+                                </div>
+                              )}
+                              {hasMultipleImages && (
+                                <div className="absolute top-2 left-2 bg-black/60 text-white px-2 py-0.5 rounded text-xs font-medium backdrop-blur-sm">
+                                  {idx + 1}/{imgs.length}
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-4 flex flex-col gap-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs uppercase text-pink-600 font-semibold bg-pink-50 px-2 py-1 rounded">{p.category}</span>
+                                <span className="text-sm text-gray-600">Stock: {p.stock}</span>
+                              </div>
+                              <h3 className="font-semibold text-base">{p.productName}</h3>
+                              <p className="text-sm text-gray-600">{p.description}</p>
+                              <div className="mt-2 flex items-center justify-between">
+                                <div>
+                                  <span className="text-gray-600 text-sm">RM </span>
+                                  <span className="text-xl font-bold text-gray-800">{Number(p.price || 0).toFixed(2)}</span>
+                                </div>
+                                <button onClick={() => openPreview(p)} className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-all duration-200 hover:shadow-lg">Add to Cart</button>
+                              </div>
+                              <div className="flex gap-2 mt-2 text-xs text-gray-500">
+                                {p.colors && <span>Colors: {p.colors}</span>}
+                                {p.sizes && <span>| Sizes: {p.sizes}</span>}
+                              </div>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
                   </div>
-
-                  <div className="p-4 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase text-pink-600 font-semibold bg-pink-50 px-2 py-1 rounded">{p.category}</span>
-                      <span className="text-sm text-gray-600">Stock: {p.stock}</span>
-                    </div>
-                    <h3 className="font-semibold text-base">{p.productName}</h3>
-                    <p className="text-sm text-gray-600">{p.description}</p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <div>
-                        <span className="text-gray-600 text-sm">RM </span>
-                        <span className="text-xl font-bold text-gray-800">{Number(p.price || 0).toFixed(2)}</span>
-                      </div>
-                      <button onClick={() => openPreview(p)} className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-all duration-200 hover:shadow-lg">
-                        Add to Cart
-                      </button>
-                    </div>
-                    <div className="flex gap-2 mt-2 text-xs text-gray-500">
-                      {p.colors && <span>Colors: {p.colors}</span>}
-                      {p.sizes && <span>| Sizes: {p.sizes}</span>}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+                );
+              });
+            })()}
+          </>
         )}
       </main>
 
@@ -329,7 +349,7 @@ export default function ScarfStoreMobile() {
               </button>
             </div>
             <div className="mt-4 flex gap-4">
-              <img src={productImages(previewProduct)[0] || previewProduct.image1 || "/logo.png"} alt={previewProduct.productName} className="w-28 h-28 object-cover rounded" />
+              <img src={productImages(previewProduct)[0] || previewProduct.image1 || "/logo.png"} alt={previewProduct.productName} className="w-28 h-28 object-contain rounded" />
               <div className="flex-1">
                 <h3 className="font-semibold">{previewProduct.productName}</h3>
                 <p className="text-sm text-gray-600">{previewProduct.description}</p>
@@ -470,4 +490,3 @@ export default function ScarfStoreMobile() {
     </div>
   );
 }
-
